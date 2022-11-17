@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  mysql:
+    container_name: iot_db
+    image: khacdatdo/mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=abcd1234
+      - MYSQL_DATABASE=iot_db
+    # ports:
+    #   - '3308:3306'
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  backend:
+    container_name: iot_be
+    image: khacdatdo/iot_be:latest
+    restart: always
+    environment:
+      - PORT=3000
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=abcd1234
+      - DB_DATABASE=iot_db
+    # ports:
+    #   - '3000:3000'
+    depends_on:
+      - mysql
+    networks:
+      - default
+      - nginx
+networks:
+  nginx:
+    external: true
+    name: nginx_default
